@@ -9,5 +9,5 @@ app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Servidor corriendose en http://localhost:${PORT}`);
 });

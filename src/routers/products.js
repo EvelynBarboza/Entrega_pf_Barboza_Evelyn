@@ -22,7 +22,7 @@ router.get('/:pid', async (req, res) => {
     if (product) {
       res.json(product);
     } else {
-      res.status(404).json({ error: 'Product not found' });
+      res.status(404).json({ error: 'Producto no encontrado' });
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -34,7 +34,7 @@ router.post('/', async (req, res) => {
     const { title, description, code, price, status, stock, category, thumbnails } = req.body;
 
     if (!title || !description || !code || !price || !category) {
-      return res.status(400).json({ error: 'Missing required fields' });
+      return res.status(400).json({ error: 'Faltan campos obligatorios' });
     }
 
     const data = await fs.readFile(PRODUCTS_FILE_PATH, 'utf8');
@@ -70,9 +70,9 @@ router.put('/:pid', async (req, res) => {
     let products = JSON.parse(data);
 
     const index = products.findIndex(product => product.id == productId);
-
+//find = encontrar
     if (index === -1) {
-      return res.status(404).json({ error: 'Product not found' });
+      return res.status(404).json({ error: 'No se encontro el producto' });
     }
 
     const updatedProduct = {
