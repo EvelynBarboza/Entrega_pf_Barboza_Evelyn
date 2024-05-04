@@ -1,33 +1,64 @@
-import express from 'express';
-import fs from 'fs/promises';
+const express = require('express')
+const { Router } = require('express'); 
 
-const PRODUCTS_FILE_PATH = './data/products.json';
-const router = express.Router();
+const router = Router();
 
+
+const PRODUCTS_FILE_PATH = '../products.json';
+
+
+
+// OBTENER TODOS LOS PRODUCTOS
 router.get('/', async (req, res) => {
-  try {
-    const data = await fs.readFile(PRODUCTS_FILE_PATH, 'utf8');
-    const products = JSON.parse(data);
-    res.json(products);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+  try{
+    const limit = req.query.limit;
+    let products = await productManager.getProducts();
+    if (limit) {
+      products = products.slice(0, parseInt(limit));
+    }
+    const objProducts = { products };
 
-router.get('/:pid', async (req, res) => {
+    res.json(objProducts);
+   } catch (error) {
+    console.error('Error al obtener los productos');
+    res.status(500).send('ups! ah ocurrido un error...')
+   }
+  
+//obtener producto por id
+
+router.get('/productos/:pid', async (req, res) => {
   try {
-    const data = await fs.readFile(PRODUCTS_FILE_PATH, 'utf8');
-    const products = JSON.parse(data);
-    const product = products.find(p => p.id == req.params.pid);
+    const { pid } = req.params;
+    const product = await productManager.getProductById(pid);
+
     if (product) {
       res.json(product);
-    } else {
-      res.status(404).json({ error: 'Producto no encontrado' });
+      } else {
+        res.status(404).send('Producto no encontrado');
     }
+    //const data = await fs.readFile(PRODUCTS_FILE_PATH, 'utf8');
+    //const products = JSON.parse(data);
+    //res.json(products);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Error al obtener el producto');
+        res.status(500).send('ups! ah ocurrido un error...');
   }
 });
+
+//router.get('/:pid', async (req, res) => {
+//  try {
+//    const data = await fs.readFile(PRODUCTS_FILE_PATH, 'utf8');
+//    const products = JSON.parse(data);
+//    const product = products.find(p => p.id == req.params.pid);
+//    if (product) {
+//      res.json(product);
+//    } else {
+//      res.status(404).json({ error: 'Producto no encontrado' });
+//    }
+//  } catch (error) {
+//    res.status(500).json({ error: error.message });
+//  }
+//});
 
 router.post('/', async (req, res) => {
   try {
@@ -70,6 +101,7 @@ router.put('/:pid', async (req, res) => {
     let products = JSON.parse(data);
 
     const index = products.findIndex(product => product.id == productId);
+
 //find = encontrar
     if (index === -1) {
       return res.status(404).json({ error: 'No se encontro el producto' });
@@ -116,6 +148,7 @@ router.delete('/:pid', async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+})
 });
 
 // Función para generar un nuevo ID único
@@ -123,4 +156,5 @@ function generateProductId() {
   return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
 
-export default router;
+
+module.exports = router

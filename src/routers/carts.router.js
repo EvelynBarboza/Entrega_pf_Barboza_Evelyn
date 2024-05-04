@@ -1,7 +1,7 @@
-import express from 'express';
-import fs from 'fs/promises';
+const express = require('express')
+const fs = require('fs');
 
-const CARTS_FILE_PATH = './data/carts.json';
+const CARTS_FILE_PATH = '../carts.json';
 const router = express.Router();
 
 router.post('/', async (req, res) => {
@@ -84,4 +84,4 @@ function generateCartId() {
 
 
 
-export default router;
+module.exports = router;
