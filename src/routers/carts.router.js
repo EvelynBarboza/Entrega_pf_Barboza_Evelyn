@@ -1,8 +1,37 @@
-const express = require('express')
-const fs = require('fs');
+//const express = require('express')
+//const fs = require('fs');
+//const CARTS_FILE_PATH = '../carts.json';
+const { Router } = require('express');
+//const carrito = require('../models/cart.models.js')
+const CartManagerMongo = require('../dao/cartsManagerMongo');
 
-const CARTS_FILE_PATH = '../carts.json';
-const router = express.Router();
+const router = Router();
+const cartService = new CartManagerMongo()
+
+//ENDPOINT Traer todos los carritos
+router.get('/', async (req, res) =>{
+  const carts = await cartService.getCarts()
+  res.send(carts)
+})
+
+//ENDPOINT Crear carrito de compras
+router.post('/', async (req, res) =>{
+  try {
+    const newCart = await cartService.createCart();
+    res.status(201).send(newCart);
+  }catch (error) {
+    res.status(500).send({error: 'Error'});
+  }
+})
+
+
+
+
+
+
+
+
+
 
 router.post('/', async (req, res) => {
   try {

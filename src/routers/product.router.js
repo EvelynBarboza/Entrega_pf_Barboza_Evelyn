@@ -1,12 +1,15 @@
-const express = require('express')
 const { Router } = require('express'); 
-
+const { productsModel } = require('../models/products.models.js')
 const router = Router();
 
 
-const PRODUCTS_FILE_PATH = '../products.json';
+//const PRODUCTS_FILE_PATH = '../products.json';
+const productService = new ProductManagerMongo();
 
-
+router.get('/', async (req, res) =>{
+  const carts = await productService.getCarts()
+  res.send(carts)
+})
 
 // OBTENER TODOS LOS PRODUCTOS
 router.get('/', async (req, res) => {
