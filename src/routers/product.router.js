@@ -6,16 +6,16 @@ const router = Router();
 //const PRODUCTS_FILE_PATH = '../products.json';
 const productService = new ProductManagerMongo();
 
-router.get('/', async (req, res) =>{
-  const carts = await productService.getCarts()
-  res.send(carts)
-})
+//router.get('/', async (req, res) =>{
+//  const carts = await productService.getCarts()
+//  res.send(carts)
+//})
 
 // OBTENER TODOS LOS PRODUCTOS
 router.get('/', async (req, res) => {
   try{
     const limit = req.query.limit;
-    let products = await productManager.getProducts();
+    let products = await productService.getProducts();
     if (limit) {
       products = products.slice(0, parseInt(limit));
     }
@@ -26,7 +26,7 @@ router.get('/', async (req, res) => {
     console.error('Error al obtener los productos');
     res.status(500).send('ups! ah ocurrido un error...')
    }
-  
+  ////////////////////////////////////////////
 //obtener producto por id
 
 router.get('/productos/:pid', async (req, res) => {
@@ -39,9 +39,6 @@ router.get('/productos/:pid', async (req, res) => {
       } else {
         res.status(404).send('Producto no encontrado');
     }
-    //const data = await fs.readFile(PRODUCTS_FILE_PATH, 'utf8');
-    //const products = JSON.parse(data);
-    //res.json(products);
   } catch (error) {
     console.error('Error al obtener el producto');
         res.status(500).send('ups! ah ocurrido un error...');

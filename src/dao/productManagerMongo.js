@@ -1,6 +1,6 @@
 const { productsModel } = require('../models/products.models')
 
-class ProductManagerFS {
+class ProductManagerMongo {
     constructor() {
         this.products = productsModel
     }
@@ -58,8 +58,22 @@ class ProductManagerFS {
             console.error('Error al eliminar el producto del carrito');
             throw error;
         }
+    }
+
+//ENDPOINT traer producto por su id
+
+    async getProductById(pid) {
+        try {
+        // Buscar el producto por su Id en la base de datos
+            const product = await product.findById(pid);
+
+        // Retornar el producto encontrado
+            return product;
+        } catch (error) {
+            console.error('Error al obtener el producto por su Id:', error);
+            throw error;
+        }
+    }
 }
 
-}
-
-module.exports = ProductManagerFS;
+module.exports = ProductManagerMongo;
