@@ -14,19 +14,44 @@ const productService = new ProductManagerMongo();
 // OBTENER TODOS LOS PRODUCTOS
 router.get('/', async (req, res) => {
   try{
-    const limit = req.query.limit;
-    let products = await productService.getProducts();
-    if (limit) {
-      products = products.slice(0, parseInt(limit));
-    }
-    const objProducts = { products };
+    const limit = parseInt(req.query.limit) || 10;
+    const page = parseInt(req.query.page) || 1;
+    const sort = req.query.sort || '';
+    const query = req.query.query || '';
 
-    res.json(objProducts);
+    let products = await productService.getProducts();
+    if (query) {
+      products = products.filter(product => product.type === query);
+    }
+    if (sort === 'asc') {
+      products.sort((a, b) => a.price - b.price);
+    } else if (sort === 'desc') {
+      products.sort((a, b) => b.price - a.price);
+    }
+
+    const startIndex = (page -1) * limit;
+    const endIndex = page * limit;
+
+    const paginatedProducts = products.slice(startIndex, endIndex);
+
+    const response = {
+      products: paginatedProducts,
+      pageInfo: {
+        currentPage: page,
+        totalPages: Math.ceil(products.length / limit)
+      }
+    };
+    res.send(response);
+
    } catch (error) {
     console.error('Error al obtener los productos');
-    res.status(500).send('ups! ah ocurrido un error...')
+    res.status(500).send('ups! ah ocurrido un error al obtener los productos')
    }
-  ////////////////////////////////////////////
+  ////////////////////////////////////////////ok
+
+
+
+
 //obtener producto por id
 
 router.get('/productos/:pid', async (req, res) => {
