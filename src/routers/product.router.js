@@ -1,5 +1,6 @@
 const { Router } = require('express'); 
 const { productsModel } = require('../models/products.models.js')
+const ProductManagerMongo = require('../dao/productManagerMongo.js')
 const router = Router();
 
 
@@ -13,16 +14,21 @@ const productService = new ProductManagerMongo();
 
 // OBTENER TODOS LOS PRODUCTOS
 router.get('/', async (req, res) => {
-  try{
+  try {
     const limit = parseInt(req.query.limit) || 10;
     const page = parseInt(req.query.page) || 1;
     const sort = req.query.sort || '';
     const query = req.query.query || '';
 
     let products = await productService.getProducts();
+
+    //filtrar por cat o disponibilidad si hay query
     if (query) {
-      products = products.filter(product => product.type === query);
-    }
+      products = products.filter(product => 
+        product.category === query || product.availability === (query === 'true'));
+      }
+
+    //ordenar por sort si se especifica sort
     if (sort === 'asc') {
       products.sort((a, b) => a.price - b.price);
     } else if (sort === 'desc') {
@@ -34,26 +40,36 @@ router.get('/', async (req, res) => {
 
     const paginatedProducts = products.slice(startIndex, endIndex);
 
-    const response = {
-      products: paginatedProducts,
-      pageInfo: {
-        currentPage: page,
-        totalPages: Math.ceil(products.length / limit)
-      }
-    };
-    res.send(response);
+    const totalPages = Math.ceil(products.length / limit);
+    const actualPrevPage = page > 1;
+    const actualNextPage = page < totalPages;
 
-   } catch (error) {
-    console.error('Error al obtener los productos');
-    res.status(500).send('ups! ah ocurrido un error al obtener los productos')
-   }
+    const response = {
+      status: 'success',
+      payload: paginatedProducts,
+      totalPages,
+      prevPage: actualPrevPage ? page - 1 : null,
+      nextPage: actualNextPage ? page + 1 : null,
+      page,
+      actualPrevPage,
+      actualNextPage,
+      prevLink: actualPrevPage ? `/products?limit=${limit}&page=${page - 1}&sort=${sort}&query=${query}` : null,
+      nextLink: actualNextPage ? `/products?limit=${limit}&page=${page + 1}&sort=${sort}&query=${query}` : null,
+      };
+
+      res.send(response);
+    
+    } catch (error) {
+      console.error('Error al obtener los productos');
+      res.status(500).send({
+        status: 'error',
+        message: 'ups! ah ocurrido un error al obtener los productos'
+      });
+     };
   ////////////////////////////////////////////ok
 
 
-
-
 //obtener producto por id
-
 router.get('/productos/:pid', async (req, res) => {
   try {
     const { pid } = req.params;
