@@ -3,13 +3,18 @@ const { Schema, model } = require('mongoose')
 const CartSchema = new Schema({
     products: {
         type: [ {
-            productId: {
+            product: {
                 type: Schema.Types.ObjectId,
                 ref: 'products'
             },
-            quantity: Number,
-        } ]
+            quantity: {
+                type: Number,
+                default: 1
+            }
+        }],
+        default: []
     }
-})
+});
 
-const cartModel = model('carts', CartSchema)
+const cartModel = model('Cart', CartSchema);
+module.exports = {cartsModel: cartModel};

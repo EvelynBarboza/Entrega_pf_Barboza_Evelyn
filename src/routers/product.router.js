@@ -41,20 +41,20 @@ router.get('/', async (req, res) => {
     const paginatedProducts = products.slice(startIndex, endIndex);
 
     const totalPages = Math.ceil(products.length / limit);
-    const actualPrevPage = page > 1;
-    const actualNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+    const hasNextPage = page < totalPages;
 
     const response = {
       status: 'success',
       payload: paginatedProducts,
       totalPages,
-      prevPage: actualPrevPage ? page - 1 : null,
-      nextPage: actualNextPage ? page + 1 : null,
+      prevPage: hasPrevPage ? page - 1 : null,
+      nextPage: hasNextPage ? page + 1 : null,
       page,
       actualPrevPage,
       actualNextPage,
-      prevLink: actualPrevPage ? `/products?limit=${limit}&page=${page - 1}&sort=${sort}&query=${query}` : null,
-      nextLink: actualNextPage ? `/products?limit=${limit}&page=${page + 1}&sort=${sort}&query=${query}` : null,
+      prevLink: hasPrevPage ? `/products?limit=${limit}&page=${page - 1}&sort=${sort}&query=${query}` : null,
+      nextLink: hasNextPage ? `/products?limit=${limit}&page=${page + 1}&sort=${sort}&query=${query}` : null,
       };
 
       res.send(response);
