@@ -19,9 +19,11 @@ app.engine('hbs', handlebars.engine({
 app.set('views', __dirname+'/views')
 app.set('view engine', 'hbs')
 
+connectDB()
+
 app.use('/', viewsRouter)
 
-connectDB()
+
 
 
 app.use('/api/products', productsRouter);

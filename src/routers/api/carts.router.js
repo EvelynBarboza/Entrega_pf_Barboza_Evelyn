@@ -1,9 +1,5 @@
-//const express = require('express')
-//const fs = require('fs');
-//const CARTS_FILE_PATH = '../carts.json';
 const { Router } = require('express');
-//const carrito = require('../models/cart.models.js')
-const CartManagerMongo = require('../dao/cartsManagerMongo');
+const CartManagerMongo = require('../../dao/cartsManagerMongo');
 
 const router = Router();
 const cartService = new CartManagerMongo()
