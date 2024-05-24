@@ -1,9 +1,9 @@
 const express = require('express')
-//const fs = require('fs');
-const productsRouter = require('../src/routers/product.router.js');
-const cartsRouter = require('../src/routers/carts.router.js');
-//const ProductManager = require('./productManager.js');
+const handlebars = require('express-handlebars')
+const productsRouter = require('../src/routers/api/product.router.js');
+const cartsRouter = require('../src/routers/api/carts.router.js');
 const index = require('../src/config/index.js')
+const viewsRouter = require('./routers/views.routes.js')
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -11,6 +11,15 @@ const PORT = process.env.PORT || 8080;
 app.use(express.json())
 app.use(express.urlencoded({extenden: true}))
 app.use(express.static(__dirname+'/public'))
+
+app.engine('hbs', handlebars.engine({
+  extname: '.hbs'
+}))
+
+app.set('views', __dirname+'/views')
+app.set('view engine', 'hbs')
+
+app.use('/', viewsRouter)
 
 connectDB()
 
