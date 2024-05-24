@@ -20,8 +20,8 @@ router.get('/', (req, res) => {
     res.render('index')
   })
 
-  router.post('/upload-file', uploader.single('myfile'),(req, res) =>{
-    res.render('succesfile')
-  })
+ //router.post('/upload-file', uploader.single('myfile'),(req, res) =>{
+ //  res.render('succesfile')
+ //})
 
   module.exports = router
