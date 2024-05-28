@@ -4,13 +4,7 @@ const ProductManagerMongo = require('../../dao/productManagerMongo.js')
 const router = Router();
 
 
-//const PRODUCTS_FILE_PATH = '../products.json';
 const productService = new ProductManagerMongo();
-
-//router.get('/', async (req, res) =>{
-//  const carts = await productService.getCarts()
-//  res.send(carts)
-//})
 
 // OBTENER TODOS LOS PRODUCTOS
 router.get('/', async (req, res) => {
@@ -51,8 +45,8 @@ router.get('/', async (req, res) => {
       prevPage: hasPrevPage ? page - 1 : null,
       nextPage: hasNextPage ? page + 1 : null,
       page,
-      actualPrevPage,
-      actualNextPage,
+      actualPrevPage: hasPrevPage ? page -1 : null,
+      actualNextPage: hasNextPage ? page + 1: null,
       prevLink: hasPrevPage ? `/products?limit=${limit}&page=${page - 1}&sort=${sort}&query=${query}` : null,
       nextLink: hasNextPage ? `/products?limit=${limit}&page=${page + 1}&sort=${sort}&query=${query}` : null,
       };
@@ -60,20 +54,19 @@ router.get('/', async (req, res) => {
       res.send(response);
     
     } catch (error) {
-      console.error('Error al obtener los productos');
+      console.error('Error al obtener los productos:', error);
       res.status(500).send({
         status: 'error',
         message: 'ups! ah ocurrido un error al obtener los productos'
       });
-     };
-  ////////////////////////////////////////////ok
-
+     }
+});
 
 //obtener producto por id
 router.get('/productos/:pid', async (req, res) => {
   try {
     const { pid } = req.params;
-    const product = await productManager.getProductById(pid);
+    const product = await productService.getProductById(pid);
 
     if (product) {
       res.json(product);
@@ -86,21 +79,8 @@ router.get('/productos/:pid', async (req, res) => {
   }
 });
 
-//router.get('/:pid', async (req, res) => {
-//  try {
-//    const data = await fs.readFile(PRODUCTS_FILE_PATH, 'utf8');
-//    const products = JSON.parse(data);
-//    const product = products.find(p => p.id == req.params.pid);
-//    if (product) {
-//      res.json(product);
-//    } else {
-//      res.status(404).json({ error: 'Producto no encontrado' });
-//    }
-//  } catch (error) {
-//    res.status(500).json({ error: error.message });
-//  }
-//});
 
+//crear un nuevo producto
 router.post('/', async (req, res) => {
   try {
     const { title, description, code, price, status, stock, category, thumbnails } = req.body;
@@ -109,93 +89,71 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Faltan campos obligatorios' });
     }
 
-    const data = await fs.readFile(PRODUCTS_FILE_PATH, 'utf8');
-    const products = JSON.parse(data);
-
-    const newProduct = {
-      id: generateProductId(), 
+    const newProduct =  new productsModel ({
       title,
       description,
       code,
       price,
-      status: status || true,
+      status: status !== undefined ? status: true,
       stock,
       category,
-      thumbnails: thumbnails || [],
-    };
+      thumbnails: thumbnails || []
+    });
 
-    products.push(newProduct);
-    await fs.writeFile(PRODUCTS_FILE_PATH, JSON.stringify(products, null, 2));
+    const savedProduct = await newProduct.save();
+    res.status(201).json(savedProduct);
 
-    res.status(201).json(newProduct);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
+//actualizar un producto por id
 router.put('/:pid', async (req, res) => {
   try {
     const productId = req.params.pid;
     const { title, description, code, price, status, stock, category, thumbnails } = req.body;
 
-    const data = await fs.readFile(PRODUCTS_FILE_PATH, 'utf8');
-    let products = JSON.parse(data);
+    const updatedProduct = await productsModel.findByIdAndUpdate(
+      productId,
+      {
+        title, 
+        description, 
+        code,
+        price,
+        status,
+        stock,
+        category,
+        thumbnails
+      }, 
+      { new: true, runValidators: true }
+    );
 
-    const index = products.findIndex(product => product.id == productId);
-
-//find = encontrar
-    if (index === -1) {
-      return res.status(404).json({ error: 'No se encontro el producto' });
+    if (!updatedProduct) {
+      return res.status(404).json({ error: 'No se encontro el productp'})
     }
-
-    const updatedProduct = {
-      id: productId,
-      title: title || products[index].title,
-      description: description || products[index].description,
-      code: code || products[index].code,
-      price: price || products[index].price,
-      status: status || products[index].status,
-      stock: stock || products[index].stock,
-      category: category || products[index].category,
-      thumbnails: thumbnails || products[index].thumbnails,
-    };
-
-    products[index] = updatedProduct;
-    await fs.writeFile(PRODUCTS_FILE_PATH, JSON.stringify(products, null, 2));
-
-    res.json(updatedProduct);
+    res.json(updatedProduct)
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
+
+//eliminar producto por id
 router.delete('/:pid', async (req, res) => {
   try {
     const productId = req.params.pid;
+    const deletedProduct = await productsModel.findByIdAndDelete(productId);
 
-    const data = await fs.readFile(PRODUCTS_FILE_PATH, 'utf8');
-    let products = JSON.parse(data);
-
-    const index = products.findIndex(product => product.id == productId);
-
-    if (index === -1) {
+    if (!deletedProduct) {
       return res.status(404).json({ error: 'Producto no encontrado' });
     }
+    res.json({ message: 'Producto eliminado con exito'});
 
-    products.splice(index, 1);
-    await fs.writeFile(PRODUCTS_FILE_PATH, JSON.stringify(products, null, 2));
-
-    res.json({ message: 'Producto eliminado con exito' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-})
 });
-
-// Función para generar un nuevo ID único
-function generateProductId() {
-  return Date.now().toString(36) + Math.random().toString(36).substr(2);
-}
 
 
 module.exports = router
