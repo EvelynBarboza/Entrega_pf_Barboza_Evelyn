@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de compras</title>
+    <link rel="stylesheet" href="/src/public/css/{{style}}">
+</head>
+<body>
+    <div>
+        <h2>Todos los productos</h2>
+        <div>
+            {{#each products}}
+        </div>
+        <div>
+            <h3>{{this.title}}</h3>
+            <p>Descripcion: {{this.description}} </p>
+            <p>Precio: {{this.price}} </p>
+            <p>Codigo: {{this.code}} </p>
+            <p>Stock: {{this.stock}} </p>
+        <div>
+             <img src="{{this.thumbnail}}" alt="">
+        </div>
+        {{/each}}
+        </div>  
+       <div>
+        <button class="btn btn-outline-dark w-100 mt-3">Agregar al carrito</button>
+       </div>
+    </div>
+</body>
+</html>
+<script src="/js/home.js" ></script>

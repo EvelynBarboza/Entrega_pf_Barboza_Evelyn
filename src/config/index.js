@@ -1,9 +1,17 @@
 const { connect } = require('mongoose')
+const dotenv = require('dotenv')
 
+dotenv.config()
+
+const objConf = {
+    port: process.env.PORT || 8080,
+    mongo_url: process.env.MONGO_URL,
+    jwt_private_key: process.env.PRIVATE_KEY
+}
 
 const connectDB = async () => {
     try {
-        await connect('mongodb://127.0.0.1:27017/e-commerce_bck', {
+        await connect(process.env.MONGO_URL, {
             useNewUrlParser: true,
             useUnifiedTopology: true
         });
@@ -16,5 +24,5 @@ const connectDB = async () => {
 };
 
 module.exports = {
-    connectDB
+    connectDB, objConf
 }

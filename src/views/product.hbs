@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Productos</title>
+</head>
+<body>
+    <h1>Todos los productos</h1>
+    <ul>
+        {{#each products}}
+        <li>{{this.name}} - {{this.price}} - {{this.description}} - {{this.code}} - {{this.stock}} </li>
+        {{/each}}
+    </ul>
+</body>
+</html>

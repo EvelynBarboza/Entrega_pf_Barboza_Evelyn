@@ -1,40 +1,47 @@
 const express = require('express')
 const handlebars = require('express-handlebars')
-const productsRouter = require('../src/routers/api/product.router.js');
-const cartsRouter = require('../src/routers/api/carts.router.js');
+const routerApp = require('../src/routes/index.js')
+const { connectDB, objConf } = require('../src/config/index.js');
+const cookieParser = require ('cookie-parser');
+const passport = require('passport');
+const { initializePassport } = require('../src/config/passport.config.js');
+const dotenv = require ('dotenv')
 const index = require('./config/index.js')
 const viewsRouter = require('./routers/views.routes.js')
 
-const app = express();
-const PORT = process.env.PORT || 8080;
+//const session = require('express-session')
+//const MongoStore = require ('connect-mongo')
+//const UserManagerMongo = require('../src/dao/userManagerMongo.js');
 
-app.use(express.json())
-app.use(express.urlencoded({extended: true}))
-app.use(express.static(__dirname+'/public'))
+
+const app = express();
+dotenv.config()
+
+const { port } = objConf;
+
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+app.use(express.static(__dirname+'/public'));
+
+app.use(cookieParser());
+app.use(passport.initialize());
+initializePassport();
 
 app.engine('hbs', handlebars.engine({
   extname: '.hbs'
-}))
+}));
 
-app.set('views', __dirname+'/views')
+app.set('views', __dirname + '/views')
 app.set('view engine', 'hbs')
-//conexion a db
+
+//CONEXION A DB
 connectDB();
 
-//rutas
-app.use('/', viewsRouter)
-app.use('api/products', productsRouter)
+//USO DE RUTAS
+app.use('/', routerApp);
 
 
-
-
-app.use('/api/products', productsRouter);
-app.use('/api/carts', cartsRouter);
-
-
-
-
-app.listen(PORT, err => {
+app.listen(port, err => {
   if (err) console.log('Error', err)
-  console.log(`Servidor corriendose en puerto ${PORT}`);
+  console.log('Servidor corriendose en puerto' + port);
 });

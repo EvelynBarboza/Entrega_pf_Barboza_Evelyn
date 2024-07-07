@@ -1,0 +1,56 @@
+<main class="container">
+    <h1>LOGIN</h1>
+        <form action="/api/sessions/login" method="POST" class="form-group w-50" id="form">
+            <label for="email">Email</label>
+            <input type="email" name="email" id="email" class="form-control" required>
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" class="form-control" required>
+            <div id="message"></div>
+            <input class="btn btn-outline-dark w-100 mt-3" type="submit" value="Login">
+        </form>
+        
+    <div>
+        <a class="btn btn-dark mt-3" href="/api/sessions/github">Entrar con GITHUB</a>
+    </div>
+    <div>
+        <a class="btn btn-danger mt-3 w-30" href="'/api/sessions/register">Registrarse</a>
+    </div>
+</main>
+
+
+<script>
+    document.querySelector('#form').addEventListener('submit', async (evt)=> {
+        evt.preventDefault();
+
+        const email = document.querySelector('#email').value;
+        const password = document.querySelector('#password').value;
+        
+        try{
+            const response = await fetch('/api/sessions/login',  {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                localStorage.setItem('token', result.token);
+                window.location.href = '/dashboard'; //REDIRIGE AL US A UNA PAG PROTEGIDA
+            } else {
+                document.querySelector('#message').textContent = result.message;
+            }
+        } catch (error) {
+            document.querySelector('#message').textContent = 'Error de conexion, vuelve a intentar en unos minutos..'
+        }
+    });
+    //const form = document.querySelector('#form')
+    //form.addEventListener('submit', async (evt) => {
+      //  evt.preventDefault()
+
+      //  const result = fetch('/api/sessions/login').then(res => res.json())
+      //  localStorage.setItem('token', result.token)
+    //})
+</script>
