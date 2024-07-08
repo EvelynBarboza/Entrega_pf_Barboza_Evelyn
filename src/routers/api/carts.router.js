@@ -1,8 +1,9 @@
 const { Router } = require('express');
-const CartManagerMongo = require('../../dao/cartsManagerMongo');
+const CartManagerMongo = require('../../dao/cartsDaoMongo.js');
 
 const router = Router();
 const cartService = new CartManagerMongo()
+
 
 //ENDPOINT Traer todos los carritos
 router.get('/', async (req, res) =>{

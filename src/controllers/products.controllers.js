@@ -1,5 +1,6 @@
 const productManager = require ('../dao/productDaoMongo.js')
 
+
 class productController {
     constructor (){
         this.productService = productManager;
