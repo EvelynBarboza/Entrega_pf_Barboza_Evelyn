@@ -1,6 +1,3 @@
-const Cart = require('../models/cart.models.js');
-const Product = require('../models/products.models.js');
-const Ticket = require('../models/ticket.models.js');
 const CartManagerMongo = require('../dao/cartsDaoMongo.js');
 const TicketManagerMongo = require('../dao/ticketsDaoMongo.js');
 
@@ -49,7 +46,7 @@ purchaseCart = async (req, res) => {
 
         res.status(200).json({
             message: 'Se genero la orden con exito :D',
-            ticket: Ticket,
+            ticket: newTicket,
             notPurchasedProducts: notPurchasedProducts.map(item => item.product._id)
         });
 
