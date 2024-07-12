@@ -103,7 +103,7 @@ class CartManagerMongo {
     }
 
 //ELIMINAR TODOS LOS PRODUCTOS DEL CARRITO
-    async clearCart (cartId) {
+    async deleteCart (cartId) {
         try {
             const cart = await this.model.findById(cartId);
             if (!cart) return null;
@@ -115,7 +115,6 @@ class CartManagerMongo {
             throw error;
         }
     }
-
 }
 
 
