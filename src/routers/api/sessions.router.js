@@ -1,12 +1,11 @@
 const passport = require('passport');
 const { Router } = require('express');
-const { UserManagerMongo } = require('../dao/userManagerMongo.js')
-const { auth } = require('../middlewares/auth.middleware.js')
-const { createHash, isValidPassword } = require ('../utils/bcrypt.js');
+const { UserManagerMongo } = require('../../dao/userDaoMongo.js')
+const { auth } = require('../../middlewares/auth.middleware.js')
+const { createHash, isValidPassword } = require ('../../utils/bcrypt.js');
 const { generateToken } = require('../../utils/jwt.js');
 const { passportCall } = require('../../middlewares/passportCall.middleware.js');
-
-//const router = Router()
+const { authenticate} = require ('../../middlewares/authorization.middleware.js')
 
 const sessionRouter = Router();
 
@@ -17,7 +16,7 @@ sessionRouter.post('/register', async (req, res) => {
         const { first_name, last_name, email, password } = req.body;
             if (!email || !password) return res.status(401).send({status: 'error', error: 'Se deben completar todos los sampos'})
     //ver si existe el usuario 
-        const userExist = await userService.getUserBy(email)
+        const userExist = await userService.getUserBy({email})
             if(userExist) return res.status(401).send({status: 'error', error: 'El usuario con ese email ya existe'})
     //CREAR EL CARRITO LLAMANDO METODO CREATECARS
         const newUser = {
@@ -25,7 +24,7 @@ sessionRouter.post('/register', async (req, res) => {
         last_name,
         email,
         password: createHash(password),
-        cartID,
+        cid: null
     }
 
     const result = await userService.createUser(newUser)
@@ -75,7 +74,7 @@ sessionRouter.post( '/login', async (req, res) =>{
     }
 })
 
-sessionRouter.get('/current', passportCall('jwt'), authorization(['user_premium', 'user']), async (req, res) =>{
+sessionRouter.get('/current', passportCall('jwt'), authenticate(['user_premium', 'user']), async (req, res) =>{
     res.send('Datos sensibles que solo puede ver el admin')
 })
 

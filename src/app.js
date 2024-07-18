@@ -1,14 +1,13 @@
 const express = require('express')
 const handlebars = require('express-handlebars')
-const routerApp = require('../src/routes/index.js')
+const routerApp = require('../src/routers/index.js')
 const { connectDB, objConf } = require('../src/config/index.js');
 const cookieParser = require ('cookie-parser');
 const passport = require('passport');
 const { initializePassport } = require('../src/config/passport.config.js');
 const dotenv = require ('dotenv')
-const index = require('./config/index.js')
+//const index = require('./config/index.js')
 const viewsRouter = require('./routers/views.routes.js')
-
 //const session = require('express-session')
 //const MongoStore = require ('connect-mongo')
 //const UserManagerMongo = require('../src/dao/userManagerMongo.js');
@@ -43,5 +42,5 @@ app.use('/', routerApp);
 
 app.listen(port, err => {
   if (err) console.log('Error', err)
-  console.log('Servidor corriendose en puerto' + port);
+  console.log('Servidor corriendose en el puerto' + port);
 });

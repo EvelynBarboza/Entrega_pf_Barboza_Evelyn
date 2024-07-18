@@ -1,36 +1,43 @@
-const { userModel } = require ('../models/user.models.js')
+//const mongoose =require('mongoose')
 const mongoosePaginate = require('mongoose-paginate-v2');
+const { usersModel } = require ('../models/user.models.js')
 
-userModel.plugin(mongoosePaginate);
 
 class UserManagerMongo {
     constructor () {
-        this.userModel = userModel;
+        this.usersModel = usersModel;
+        //usersModel.plugin(mongoosePaginate);
     }
 //TRAER TODOS LOS USUARIOS
     async getUsers({limit = 10, numPage= 1}) {
-        const users = await this.userModel.paginate({}, {limit, page: numPage, sort: {price: -1}, lean: true })
+        const options = {
+            limit,
+            page: numPage,
+            sort: {price: -1},
+            lean: true
+        };
+        const users = await this.usersModel.paginate({}, options)
         return users;
     }
 
 //CREARE UN NUEVO USUARIO
     async createUser(newUser) {
-        return await this.userModel.create(newUser)
+        return await this.usersModel.create(newUser)
     }
 
 //TRAER UN USUARIO POR ALGUN FILTRO ESPECIFICO
     async getUserBy(filter) {
-        return this.userModel.findOne(filter);
+        return this.usersModel.findOne(filter);
     }
 
 //TRAER UN USUARIO POR EMAIL
     async getUserByEmail(email) {
-        return this.userModel.findOne({email});
+        return this.usersModel.findOne({email});
     }
 
 //ACTUALIZAR UN USUARIO 
 async updateUser(id, updateData) {
-    return this.userModel.updateOne({_id: id}, updateData);
+    return this.usersModel.updateOne({_id: id}, updateData);
     }
 
 //ELIMINAR UN USUARIO
@@ -39,4 +46,4 @@ async deleteUser(id) {
     }
 }
 
-module.exports = {UserManagerMongo}
+module.exports = { UserManagerMongo };
