@@ -1,0 +1,42 @@
+paths:
+  /api/products/:
+    get:
+      summary: Obtiene todos los productos
+      tags:
+        - Products
+      responses:
+        "200":
+          description: Los productos fueron obtneidos correctamente desde la BD
+        "500": 
+          description: Error interno del servidor
+
+components:
+  schemmas:
+    Products:
+      type: object
+      properties:
+        _id: 
+          type: ObjectId
+          description: Id generado por mongo
+        title: 
+          type: String
+          description: Nombre del producto
+        description: 
+          type: String 
+          description: Describe el producto
+        price: 
+          type: Number
+          description: Precio del producto
+        code:
+          type: Number
+          description: Codigo del producto
+        stock: 
+          type: Number
+          description: Cantidad disponible de cada producto
+      example:
+        _id: ObjectId('kc55mdlcdc4dv22v4ddS')
+        title: Top Sirena
+        description: Top negro talle unico
+        price: 990
+        code: 586
+        stock: 5
