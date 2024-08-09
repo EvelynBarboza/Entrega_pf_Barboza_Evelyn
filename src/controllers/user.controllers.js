@@ -4,7 +4,8 @@ const userService = new UserManagerMongo();
 
 class UserController {
     constructor(){
-        this.userService = userService;
+        this.service = ''
+        //this.userService = userService;
     }
 
 //TRAER TODOS LOS USUARIOS

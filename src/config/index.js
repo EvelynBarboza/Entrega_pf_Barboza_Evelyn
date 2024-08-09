@@ -12,8 +12,8 @@ const objConf = {
 const connectDB = async () => {
     try {
         await connect(process.env.MONGO_URL, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
+            //useNewUrlParser: true,
+            //useUnifiedTopology: true
         });
         console.log('DB connected');
     } catch (error) {
