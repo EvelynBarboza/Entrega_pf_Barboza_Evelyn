@@ -1,0 +1,45 @@
+paths: 
+  /api/carts/:
+    get:
+      summary: Obtiene los carritos
+      tags: 
+        - Carts
+      responses:
+        "200":
+          description: Carritoas obtenidos correctamnete
+          content: 
+            application/json:
+              schemma:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Cart'
+        "500":
+          description: EError del servidor
+
+components:
+  schemmas:
+    Carts:
+      type: Object
+      properties:
+        _id:
+          type: ObjectId
+          description: Id generado por monfo
+        products: 
+          type: array
+          items:
+            type: object
+            properties:
+              product:
+                type: string 
+                description: ID del producto, referenciandov la coleccion
+              quantity:
+                type: integer
+                description: Cantidad del producto en el carro
+                default: 1
+      example:
+        _id: 5421cf1dsf1v5
+        products:
+          -prodcut: "25d4c5dv1d"
+          quantity: 4
+          -product: "cds55dv1f2"
+          quantity: 2
