@@ -18,11 +18,11 @@ paths:
 
 components:
   schemmas:
-    Carts:
-      type: Object
+    Cart:
+      type: object
       properties:
         _id:
-          type: ObjectId
+          type: string
           description: Id generado por monfo
         products: 
           type: array
@@ -39,7 +39,7 @@ components:
       example:
         _id: 5421cf1dsf1v5
         products:
-          -prodcut: "25d4c5dv1d"
-          quantity: 4
-          -product: "cds55dv1f2"
-          quantity: 2
+          - product: "25d4c5dv1d"
+            quantity: 4
+          - product: "cds55dv1f2"
+            quantity: 2
