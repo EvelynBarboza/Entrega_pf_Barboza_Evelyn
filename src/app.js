@@ -13,33 +13,27 @@ const viewsRouter = require('./routers/views.routes.js')
 //const UserManagerMongo = require('../src/dao/userManagerMongo.js');
 const swaggerJsDocs = require('swagger-jsdoc');
 const swaggerUiExpress = require('swagger-ui-express');
+const { addLogger } = require('./middlewares/addLogger.js');
+const { swaggerOptions } = require('./config/swagger.config.js');
+const logger = require('./utils/logger.js')
 
 const app = express();
 dotenv.config()
 
 const { port } = objConf;
 
-const swaggerOptions = {
-  definition: {
-    openapi: '3.0.1',
-    info: {
-      title: 'Documentacion de App para mi e-commerce',
-      description: 'APPI para documentar app de de un mini e-commerce'
-    }
-  },
-  apis: [`${__dirname}/docs/**/*.yaml`]
-}
-
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(express.static(__dirname+'/public')); 
 
 app.use(cookieParser());
-const specs = swaggerJsDocs(swaggerOptions)
-app.use('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs))
+app.use(addLogger);
 
 app.use(passport.initialize());
 initializePassport();
+
+const specs = swaggerJsDocs(swaggerOptions)
+app.get('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs))
 
 app.engine('hbs', handlebars.engine({
   extname: '.hbs'
@@ -56,6 +50,6 @@ app.use('/', routerApp);
 
 
 app.listen(port, err => {
-  if (err) console.log('Error', err)
-  console.log('Servidor corriendose en el puerto' + port);
+  if (err) logger.info('Error', err)
+  logger.info('Servidor corriendose en el puerto' + port);
 });

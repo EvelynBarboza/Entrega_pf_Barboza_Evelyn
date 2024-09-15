@@ -1,18 +1,20 @@
-const {UserManagerMongo} = require('../dao/userDaoMongo.js');
-
-const userService = new UserManagerMongo();
+//const {UserManagerMongo} = require('../dao/mongo/userDaoMongo.js');
+const { userService} = require ("../service");
+const { sendEmail } = require("../utils/sendEmail");
+//const userService = new UserManagerMongo();
 
 class UserController {
     constructor(){
+       // this.service = userService
         this.service = ''
-        //this.userService = userService;
+        //this.userService = userService; no
     }
 
 //TRAER TODOS LOS USUARIOS
 getUsers = async (req, res) => {
     const {limit, numPage} = req.query;
     try {
-        const users = await this.userService.getUsers({limit, numPage})
+        const users = await this.service.getItems({limit, numPage})
         res.send({status: 'success', payload: users})
     } catch (error) {
         res.status(500).send({status: 'error', error: error.message});
@@ -23,7 +25,7 @@ getUsers = async (req, res) => {
 getUser = async (req, res) => {
     const {uid} = req.params;
     try {
-        const user = await this.userService.getUserBy({_id: uid})
+        const user = await this.service.getItem({_id: uid})
         if (user) {
             res.send({status:'success', payload: user});
         } else {
@@ -42,8 +44,10 @@ createUser = async (req, res) => {
     }
     const newUser = {first_name, last_name, email};
     try {
-        const result = await this.userService.createUser(newUser);
+        const result = await this.service.createItem(newUser);
+        const html = `<h1>Bienvenido ${result.first_name} ${result.last_name}</h1>`
         res.send({status: 'success', payload: result})
+        sendEmail({userMail: result.email, subject: `Se ah creado corresctamente el usuario ${result.email}`, html})
     } catch (error) {
         res.status(500).send({status: 'error', error: error.message});
     }
@@ -58,8 +62,10 @@ updateUser = async (req, res) => {
         return res.status(400).send({ status: 'error', error: 'Faltan campos obligatorios'});
     }
     try {
-        const result = await this.userService.updateUser(uid, {first_name, last_name, email});
+        const result = await this.service.updateItem(uid, {first_name, last_name, email});
+        const html = `<h2>Actuslizacion de usuario de ${result.first_name}</h2>`
         res.send({ status: 'success', payload: result});
+        sendEmail({userMail: result.email, subject: 'Su usuario se ah actualizado con exito', html})
     } catch (error) {
         res.status(500).send({ status: 'error', error: error.message});
     }
@@ -69,7 +75,7 @@ updateUser = async (req, res) => {
 deleteUser = async (req, res) => {
     const { uid } = req.params;
     try {
-        const result = await this.userService.deleteUser(uid);
+        const result = await this.service.deleteItem(uid);
         res.send({ status: 'success', payload: result});
     } catch (error) {
         res.status(500).send({ status: 'error', error: error.message})

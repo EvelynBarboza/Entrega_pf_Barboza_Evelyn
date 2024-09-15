@@ -1,9 +1,9 @@
 //const mongoose =require('mongoose')
 const mongoosePaginate = require('mongoose-paginate-v2');
-const { usersModel } = require ('../models/user.models.js')
+const { usersModel } = require ('../../models/user.models.js')
 
 
-class UserManagerMongo {
+class UserDaoMongo {
     constructor () {
         this.usersModel = usersModel;
         //usersModel.plugin(mongoosePaginate);
@@ -46,4 +46,4 @@ async deleteUser(id) {
     }
 }
 
-module.exports = { UserManagerMongo };
+module.exports = { UserDaoMongo };

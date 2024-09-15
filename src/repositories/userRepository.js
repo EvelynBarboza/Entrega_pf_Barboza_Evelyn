@@ -1,6 +1,8 @@
-class UserRepository {
+const { ClassRepository } = require("./classRepository")
+
+class UserRepository extends ClassRepository{
     constructor(dao){
-        this.dao = dao
+        super(dao)
     }
 }
 

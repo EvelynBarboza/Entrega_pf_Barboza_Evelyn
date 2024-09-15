@@ -1,6 +1,5 @@
 const passport = require('passport');
 const { Router } = require('express');
-const { UserManagerMongo } = require('../../dao/userDaoMongo.js')
 const { auth } = require('../../middlewares/auth.middleware.js')
 const { createHash, isValidPassword } = require ('../../utils/bcrypt.js');
 const { generateToken } = require('../../utils/jwt.js');
@@ -8,8 +7,6 @@ const { passportCall } = require('../../middlewares/passportCall.middleware.js')
 const { authenticate} = require ('../../middlewares/authorization.middleware.js')
 
 const sessionRouter = Router();
-
-const userService = new UserManagerMongo();
 
 sessionRouter.post('/register', async (req, res) => {
     try {
@@ -67,7 +64,7 @@ sessionRouter.post( '/login', async (req, res) =>{
             httpOnly: true
         }).send({status: 'success', message: 'usuario logueado'})
         
-        console.log(req.session.user)
+        logger.info(req.session.user)
         res.send('login success')
     } catch (error) {
         console.error('error')

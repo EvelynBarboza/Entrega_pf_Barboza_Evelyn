@@ -6,3 +6,4 @@ GET http://localhost:8080/api/carts/
 POST https://localhost:8080/api/carts 
 
 ###
+POST https://localhost:8080/api/users

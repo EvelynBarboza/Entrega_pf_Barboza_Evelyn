@@ -1,7 +1,7 @@
 const { Router } = require ('express');
 const paginate = require('mongoose-paginate-v2');
 const productController = require('../controllers/products.controllers.js');
-const UserManagerMongo = require('../dao/userDaoMongo.js')
+const UserManagerMongo = require('../dao/mongo/userDaoMongo.js')
 const auth = require ('../middlewares/auth.middleware.js');
 
 const router = Router()
