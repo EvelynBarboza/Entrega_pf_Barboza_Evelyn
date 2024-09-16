@@ -1,13 +1,14 @@
 //const {UserManagerMongo} = require('../dao/mongo/userDaoMongo.js');
-const { userService} = require ("../service");
+const { UserDaoMongo } = require("../dao/mongo/userDaoMongo");
+const { UserDto } = require("../dto/userDto");
+//const { userService} = require ("../service");
 const { sendEmail } = require("../utils/sendEmail");
-//const userService = new UserManagerMongo();
+const { UserRepository } = require('../repositories/userRepository.js')
 
 class UserController {
     constructor(){
        // this.service = userService
-        this.service = ''
-        //this.userService = userService; no
+        this.service = new UserRepository (new UserDaoMongo())
     }
 
 //TRAER TODOS LOS USUARIOS
@@ -38,11 +39,11 @@ getUser = async (req, res) => {
 
 //CREAR UN USUARIO
 createUser = async (req, res) => {
-    const { first_name, last_name, email} = req.body;
-    if (!first_name || !last_name || !email) {
+    const { first_name, last_name, email, password} = req.body;
+    if (!first_name || !last_name || !email || !password) {
         return res.status(400).send({ status: 'error', error: 'Faltan campos obligatorios'});
     }
-    const newUser = {first_name, last_name, email};
+    const newUser = new UserDto({first_name, last_name, email, password})
     try {
         const result = await this.service.createItem(newUser);
         const html = `<h1>Bienvenido ${result.first_name} ${result.last_name}</h1>`

@@ -1,9 +1,10 @@
-const productManager = require ('../dao/productDaoMongo.js')
-
+const { ProductDaoMongo } = require('../dao/mongo/productDaoMongo.js');
+const { ProductRepository } = require ('../repositories/productRepository.js')
 
 class productController {
     constructor (){
-        this.productService = productManager;
+      const productDao = new ProductDaoMongo();
+      this.productService = new ProductRepository(productDao);
 
     }
 //traer todos los productos con paginacion, orden y filtro
@@ -149,6 +150,5 @@ deleteProductForCart = async (req, res) =>{
     }
   }
 }
-
 
 module.exports = new productController();

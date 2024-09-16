@@ -6,7 +6,7 @@ const { usersModel } = require ('../../models/user.models.js')
 class UserDaoMongo {
     constructor () {
         this.usersModel = usersModel;
-        //usersModel.plugin(mongoosePaginate);
+        
     }
 //TRAER TODOS LOS USUARIOS
     async getUsers({limit = 10, numPage= 1}) {
@@ -42,7 +42,7 @@ async updateUser(id, updateData) {
 
 //ELIMINAR UN USUARIO
 async deleteUser(id) {
-    return this.userModel.deleteOne({_id: id})
+    return this.usersModel.deleteOne({_id: id})
     }
 }
 

@@ -1,8 +1,7 @@
 const { Router } = require('express'); 
-const passport = require('passport');
+const  {passportCall}  = require ('../../middlewares/passportCall.middleware.js')
+const { authenticate } = require ('../../middlewares/authorization.middleware.js')
 const UserController = require('../../controllers/user.controllers.js');
-
-//import { uploader } from '../utils.js';
 
 const router = Router();
 const {
@@ -14,19 +13,20 @@ const {
 } = new UserController();
 
 //TARER TODOS LOS USUARIOS
-router.get('/', passport.authenticate('jwt', { session: false }), getUsers)
+router.get('/', passportCall('jwt'), authenticate(['admin']), getUsers)
+//passport.authenticate('jwt', { session: false }),
 
 // TRAER UN USUARIO POR ID
-router.get('/:uid', passport.authenticate('jwt', { session: false }), getUser)
+router.get('/:uid', passportCall('jwt'), authenticate(['admin', 'user']), getUser)
 
 // CREAR UN USUARIO
-router.post('/', passport.authenticate('jwt', { session: false }), createUser)
+router.post('/', createUser)
 
 //ACTUALIZAR UN USUARIO
-router.put('/:uid', passport.authenticate('jwt', { session: false }), updateUser)
+router.put('/:uid', passportCall('jwt'), authenticate(['admin', 'user']), updateUser)
 
 //ELIMINAR UN USUARIO
-router.delete('/:uid', passport.authenticate('jwt', { session: false }), deleteUser)
+router.delete('/:uid', passportCall('jwt'), authenticate(['admin']), deleteUser)
 
 module.exports = router;
 

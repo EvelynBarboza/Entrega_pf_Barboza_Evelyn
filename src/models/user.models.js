@@ -5,6 +5,10 @@ const { required } = require('nodemon/lib/config');
 const userCollection = 'users'
 
 const userSchema = new Schema({
+    fullname: {
+        type: String,
+        required: true
+    },
     first_name: {
         type: String,
         index: true,

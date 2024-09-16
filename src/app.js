@@ -25,12 +25,10 @@ const { port } = objConf;
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(express.static(__dirname+'/public')); 
-
-app.use(cookieParser());
 app.use(addLogger);
-
-app.use(passport.initialize());
+app.use(cookieParser());
 initializePassport();
+app.use(passport.initialize());
 
 const specs = swaggerJsDocs(swaggerOptions)
 app.get('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs))

@@ -5,6 +5,7 @@ const productsRouter = require('../routers/api/product.router.js');
 //const pruebaCookie = require('../routers/api/cookies.router.js');
 const {sessionRouter} = require('../routers/api/sessions.router.js');
 const cartsRouter = require('../routers/api/carts.router.js');
+const authRouter = require ('../routers/api/auth.router.js')
 
 const router = Router();
 
@@ -16,5 +17,6 @@ router.use('/api/products', productsRouter);
 router.use('/api/carts', cartsRouter);
 //localhost:8080/api/sessions/githubcallback
 router.use('/api/sessions', sessionRouter);
+router.use('/api/auth', authRouter);
 
 module.exports = router;

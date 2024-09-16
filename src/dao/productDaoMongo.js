@@ -1,16 +1,26 @@
 const { productsModel } = require('../models/products.models')
 const { cartModel } = require('../models/cart.models')
+const mongoosePaginate = require('mongoose-paginate-v2')
 
-class ProductManagerMongo {
+class ProductDaoMongo {
     constructor() {
-        this.products = productsModel;
+        this.productsModels = productsModel;
+        this.productsModels.plugin(mongoosePaginate);
     }
 
 //TRAER TODOS LOS PRODUCTOS
-async getAllProducts() {
+async getAllProducts({ limit = 10, page = 1, sort= '', query = ''}) {
     try {
-        const products = await this.products.find();
-        return products;
+        const options = {
+            limit,
+            page,
+            sort: sort ? { price: sort === 'asc' ? 1 : -1 } : {},
+            lean: true,
+        };
+        const filter = query ? {$or: [{ category: query}, {availability: query === 'true'}] } : {};
+        return await this.productsModels.paginate(filter, options)
+        //const products = await this.products.find();
+        //return products;
     } catch (error) {
         console.error('Error al obtener los productos', error);
         throw error;
@@ -22,8 +32,7 @@ async getAllProducts() {
     async getProductById(pid) {
         try {
         // Buscar el producto por su Id en la base de datos
-            const product = await this.products.findById(pid);
-        // Retornar el producto encontrado
+            const product = await this.productsModel.findById(pid);
             return product;
         } catch (error) {
             console.error('Error al obtener el producto por su Id:', error);
@@ -34,10 +43,8 @@ async getAllProducts() {
 //CREAR UN PRODUCTO    ------SOLO ADMIN
 async createProduct(productData) {
     try {
-        const newProduct = new this.products(productData);
-        await newProduct.save();
-        return newProduct;
-
+        const newProduct = await this.productsModels.create(productData);
+        return newProduct
     } catch (error) {
         console.error('Erros al crear el producto', error);
         throw error;
@@ -48,7 +55,7 @@ async createProduct(productData) {
 //ACTUALIZAR UN PRODUCTO POR ID    ------SOLO ADMIN
     async updateProduct (pid, productData) {
         try {
-            const updateProduct = await this.products.findByAndUpdate(pid, productData, { new: true });
+            const updateProduct = await this.productsModel.findByIdAndUpdate(pid, productData, { new: true });
             return updateProduct;
 
         }catch(error) {
@@ -90,7 +97,7 @@ async createProduct(productData) {
  //ELIMINAR UN PRODUCTO DEL CARRITO
    async deleteProductForCart(cid, pid) {
         try {
-            const cart = await cartModel.findById({_id: cid});
+            const cart = await cartModel.findById(cid);
             const index = cart.products.findIndex(product => pid === product.product.toString());
             if(index !== -1) {
                 const product = cart.products[index];
@@ -115,7 +122,7 @@ async createProduct(productData) {
 //ELIMINAR UN PRODUCTO POR ID ----SOLO ADMIN
     async deleteProduct(pid){
         try {
-            const result = await this.products.findByAndDelete(pid);
+            const result = await this.productsModel.findByIdAndDelete(pid);
             return result !== null;
         } catch (error) {
             console.error('Error al eliminar el productos', error);
@@ -124,4 +131,4 @@ async createProduct(productData) {
     }
 
 }
-module.exports = ProductManagerMongo;
+module.exports = ProductDaoMongo;
