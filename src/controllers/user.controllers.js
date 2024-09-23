@@ -48,7 +48,11 @@ createUser = async (req, res) => {
         const result = await this.service.createItem(newUser);
         const html = `<h1>Bienvenido ${result.first_name} ${result.last_name}</h1>`
         res.send({status: 'success', payload: result})
-        sendEmail({userMail: result.email, subject: `Se ah creado corresctamente el usuario ${result.email}`, html})
+        try {
+            await sendEmail({userMail: result.email, subject: `Se ah creado corresctamente el usuario ${result.email}`, html})
+        } catch (emailError) {
+                console.error('Error  al enviar el correo', emailError.message)
+            }
     } catch (error) {
         res.status(500).send({status: 'error', error: error.message});
     }
@@ -66,7 +70,11 @@ updateUser = async (req, res) => {
         const result = await this.service.updateItem(uid, {first_name, last_name, email});
         const html = `<h2>Actuslizacion de usuario de ${result.first_name}</h2>`
         res.send({ status: 'success', payload: result});
-        sendEmail({userMail: result.email, subject: 'Su usuario se ah actualizado con exito', html})
+        try {
+            await sendEmail({userMail: result.email, subject: 'Su usuario se ah actualizado con exito', html})
+        } catch (emailError) {
+            console.error('error al enviar el correo:', emailError.message);
+        }
     } catch (error) {
         res.status(500).send({ status: 'error', error: error.message});
     }

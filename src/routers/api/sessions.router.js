@@ -5,17 +5,21 @@ const { createHash, isValidPassword } = require ('../../utils/bcrypt.js');
 const { generateToken } = require('../../utils/jwt.js');
 const { passportCall } = require('../../middlewares/passportCall.middleware.js');
 const { authenticate} = require ('../../middlewares/authorization.middleware.js')
+const UserController = require('../../controllers/user.controllers.js');
 
 const sessionRouter = Router();
+const userController = new UserController
 
 sessionRouter.post('/register', async (req, res) => {
     try {
         const { first_name, last_name, email, password } = req.body;
             if (!email || !password) return res.status(401).send({status: 'error', error: 'Se deben completar todos los sampos'})
+    
     //ver si existe el usuario 
-        const userExist = await userService.getUserBy({email})
+        const userExist = await userController.service.getItem({email})
             if(userExist) return res.status(401).send({status: 'error', error: 'El usuario con ese email ya existe'})
-    //CREAR EL CARRITO LLAMANDO METODO CREATECARS
+    
+    //CREAR EL usuario L
         const newUser = {
         first_name,
         last_name,
@@ -24,9 +28,9 @@ sessionRouter.post('/register', async (req, res) => {
         cid: null
     }
 
-    const result = await userService.createUser(newUser)
+    const result = await userController.service.createItem(newUser)
 
-    const token = await generateToken({
+    const token = generateToken({
         first_name,
         last_name,
         email,
@@ -39,61 +43,64 @@ sessionRouter.post('/register', async (req, res) => {
     }).send({status: 'success', message: 'Usuario registrado'})
 
     } catch (error) {
-        console.error('error')
+        console.error('Error en /register:', error)
+        res.status(500).send({status: 'error', error: 'Error en el servidor'});
     }
-})
+});
 
 sessionRouter.post( '/login', async (req, res) =>{
     try {
         const { email, password } = req.body
             if (!email || !password) return res.status(401).send({status: 'error', error: 'Se deben completar todos los campos'})
-        const userFound = await userService.getUserBy({email})
-            if (!isValidPassword({password: userFound.password}, password))return res.status(401).send({status: 'error', error: 'Password incorrecto'})
-           // if(!userFound) return res.status(400).send({status: 'error', error: 'Usuario no encontrado'})
         
-            const token = generateToken({
+        const userFound = await userController.service.getItem({email});
+            if(!userFound) return res.status(400).send({status: 'error', error: 'Usuario no encontrado'})
+            if (!isValidPassword(userFound, password))return res.status(401).send({status: 'error', error: 'Password incorrecto'});
+
+        const token = generateToken({
             email,
-            first_name,
-            last_name,
+            first_name: userFound.first_name,
+            last_name: userFound.last_name,
             id: userFound._id,
             role: userFound.role
-        })
+        });
 
         res.cookie('token', token, {
             maxAge: 60*60*1000*24,
             httpOnly: true
-        }).send({status: 'success', message: 'usuario logueado'})
+        }).send({status: 'success', message: 'usuario logueado'});
         
-        logger.info(req.session.user)
-        res.send('login success')
+    
     } catch (error) {
-        console.error('error')
+        console.error('Error en /login:', error);
+        res.status(500).send({status: 'error', error: 'Error en el servidor'})
     }
-})
+});
 
 sessionRouter.get('/current', passportCall('jwt'), authenticate(['user_premium', 'user']), async (req, res) =>{
     res.send('Datos sensibles que solo puede ver el admin')
 })
 
-//ver esta ruta
+
 sessionRouter.get('/session', async (req, res) =>{
     try {
         if (req.session.counter) {
-            req.session.counter++
+            req.session.counter++;
             res.send(`Se ah visitado el sitio ${req.session.counter} veces.`)
             }else {
             req.session.counter = 1
-            res.send('Biendvenides')
+            res.send('Biendvenida')
             }
     } catch (error) {
-        console.error(error)
+        console.error('Error en /session:', error);
+        res.status(500).send({status: 'error', error: 'Error en el servidor'});     
     }
 })
 
 sessionRouter.get('/logout', async (req, res) => {
     req.session.destroy(err =>{
         if (err) return res.send({ status: 'error', error: err})
-            else return res.render('login')
+            return res.render('login')
     })
 })
 
@@ -106,28 +113,5 @@ sessionRouter.get('/githubcallback', passport.authenticate('github', {failureRed
     req.session.user = req.user 
     res.redirect('/products')
 })
-
-///////////////    LOGIN Y REGISTER CON PASSPORT    //////////////
-//REGISTER
-//sessionRouter.post('/register', passport.authenticate('register', {failureRedirect: '/failregister'}), async (req, res) =>{
-//    res.send({status: 'succes', message:'Usuario registrado'})
-//})
-//sessionRouter.post('/failregister', async (req, res) =>{
-//    console.log('Fallo la operacion')
-//    res.send({error: 'failed'})
-//})
-////LOGIN
-//sessionRouter.post('/login', passport.authenticate('login', {failureRedirect: '/faillogin'}), async (req, res) =>{
-//    if(!req.user) return res.status(400).send({status: 'error', error: 'credenciales invalidas'})
-//        req.session.user = {
-//            first_name: req.user.first_name,
-//            last_name: req.user.last_name,
-//            email: req.user.email
-//        }
-//    res.send({status: 'succes', message:'Usuario logueado', payload: req.user})
-//})
-//sessionRouter.post('/faillogin', async (req, res) =>{
-//    res.send({error: 'fallo el login'})
-//})
 
 module.exports= { sessionRouter }

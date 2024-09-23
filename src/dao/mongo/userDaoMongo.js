@@ -21,7 +21,7 @@ class UserDaoMongo {
     }
 
 //CREARE UN NUEVO USUARIO
-    async createUser(newUser) {
+    async create(newUser) {
         return await this.usersModel.create(newUser)
     }
 
